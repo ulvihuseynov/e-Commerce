@@ -3,6 +3,8 @@ package org.ideaprojects.ecommerce.controller;
 
 import jakarta.validation.Valid;
 import org.ideaprojects.ecommerce.model.Category;
+import org.ideaprojects.ecommerce.payload.CategoryDTO;
+import org.ideaprojects.ecommerce.payload.CategoryResponse;
 import org.ideaprojects.ecommerce.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,19 +26,20 @@ public class CategoryController {
 
     @GetMapping("/public/categories")
     //@RequestMapping(value = "/public/categories",method=RequestMethod.GET)
-    public ResponseEntity<List<Category>> getAllCategories(){
+    public ResponseEntity<CategoryResponse> getAllCategories(@RequestParam(name = "pageSize", required = false) Integer pageSize,
+                                                             @RequestParam(name = "pageNumber", required = false) Integer pageNumber){
 
-        return new ResponseEntity<>(categoryService.getAllCategories(),HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.getAllCategories(pageSize,pageNumber),HttpStatus.OK);
     }
 
     @PostMapping("/public/categories")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category){
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
 
-        return new ResponseEntity<>(  categoryService.createCategory(category),HttpStatus.CREATED);
+        return new ResponseEntity<>(  categoryService.createCategory(categoryDTO),HttpStatus.CREATED);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId){
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long categoryId){
 
             return new ResponseEntity<>(categoryService.deleteCategory(categoryId),HttpStatus.OK);
 
@@ -44,10 +47,10 @@ public class CategoryController {
     }
 
     @PutMapping("/public/categories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@Valid @RequestBody Category category,
+    public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO,
                                                  @PathVariable Long categoryId){
 
-            return new ResponseEntity<>(categoryService.updateCategory(category,categoryId),HttpStatus.OK);
+            return new ResponseEntity<>(categoryService.updateCategory(categoryDTO,categoryId),HttpStatus.OK);
 
 
     }

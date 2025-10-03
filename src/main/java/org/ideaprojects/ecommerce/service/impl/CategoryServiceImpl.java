@@ -3,11 +3,15 @@ package org.ideaprojects.ecommerce.service.impl;
 import org.ideaprojects.ecommerce.exceptions.APIException;
 import org.ideaprojects.ecommerce.exceptions.ResourceNotFoundException;
 import org.ideaprojects.ecommerce.model.Category;
+import org.ideaprojects.ecommerce.payload.CategoryDTO;
+import org.ideaprojects.ecommerce.payload.CategoryResponse;
 import org.ideaprojects.ecommerce.repository.CategoryRepository;
 import org.ideaprojects.ecommerce.service.CategoryService;
-import org.springframework.http.HttpStatus;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
@@ -16,45 +20,56 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
-
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper) {
         this.categoryRepository = categoryRepository;
+        this.modelMapper = modelMapper;
     }
 
-    public List<Category> getAllCategories(){
+    public CategoryResponse getAllCategories(Integer pageSize, Integer pageNumber){
 
-        List<Category> categories = categoryRepository.findAll();
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        Page<Category> categoryPage = categoryRepository.findAll(pageRequest);
+        List<Category> categories = categoryPage.getContent();
+        System.out.println(categoryPage);
         if (categories.isEmpty()) {
             throw new APIException("No category created till now");
 
         }
-        return categories;
+        CategoryResponse categoryResponse=new CategoryResponse();
+        List<CategoryDTO> categoryDTOList = categories.stream().map(category -> modelMapper.map(category, CategoryDTO.class))
+                .toList();
+        categoryResponse.setContent(categoryDTOList);
+        return categoryResponse;
     }
 
     @Override
-    public String createCategory( Category category){
+    public CategoryDTO createCategory( CategoryDTO categoryDTO){
 
-       Category categoryDB= categoryRepository.findByCategoryName(category.getCategoryName());
+        Category category = modelMapper.map(categoryDTO, Category.class);
+        Category categoryDB= categoryRepository.findByCategoryName(category.getCategoryName());
         if (categoryDB != null) {
             throw new APIException("Category with the name " + category.getCategoryName() +" already exist!");
         }
-        categoryRepository.save(category);
-        return "added categories successfully";
+        Category savedCategory = categoryRepository.save(category);
+
+        return modelMapper.map(savedCategory,CategoryDTO.class);
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException( "Category", "categoryId",categoryId));
         categoryRepository.delete(category);
-        return "Category with categoryId " + categoryId + " deleted successfully";
+        return modelMapper.map(category,CategoryDTO.class);
     }
 
     @Override
-    public String updateCategory(Category category, Long categoryId) {
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId) {
 
+        Category category = modelMapper.map(categoryDTO, Category.class);
         Category categoryDB = categoryRepository.findById(categoryId)
                 .orElseThrow(()->new  ResourceNotFoundException( "Category", "categoryId",categoryId));
 
@@ -62,6 +77,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category savedCategory = categoryRepository.save(categoryDB);
 
-        return "category updated successfully " + savedCategory ;
+        return modelMapper.map(savedCategory,CategoryDTO.class) ;
     }
 }
