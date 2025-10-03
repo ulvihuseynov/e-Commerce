@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -27,9 +28,12 @@ public class CategoryServiceImpl implements CategoryService {
         this.modelMapper = modelMapper;
     }
 
-    public CategoryResponse getAllCategories(Integer pageSize, Integer pageNumber){
+    public CategoryResponse getAllCategories(Integer pageSize, Integer pageNumber,String sortBy,String sortOrder){
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        Sort sortByAndOrder=sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize,sortByAndOrder);
         Page<Category> categoryPage = categoryRepository.findAll(pageRequest);
         List<Category> categories = categoryPage.getContent();
         System.out.println(categoryPage);
@@ -41,6 +45,11 @@ public class CategoryServiceImpl implements CategoryService {
         List<CategoryDTO> categoryDTOList = categories.stream().map(category -> modelMapper.map(category, CategoryDTO.class))
                 .toList();
         categoryResponse.setContent(categoryDTOList);
+        categoryResponse.setPageNumber(categoryPage.getNumber());
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setTotalPage(categoryPage.getTotalPages());
+        categoryResponse.setLastPage(categoryPage.isLast());
         return categoryResponse;
     }
 

@@ -2,6 +2,7 @@ package org.ideaprojects.ecommerce.controller;
 
 
 import jakarta.validation.Valid;
+import org.ideaprojects.ecommerce.config.AppConstants;
 import org.ideaprojects.ecommerce.model.Category;
 import org.ideaprojects.ecommerce.payload.CategoryDTO;
 import org.ideaprojects.ecommerce.payload.CategoryResponse;
@@ -26,10 +27,12 @@ public class CategoryController {
 
     @GetMapping("/public/categories")
     //@RequestMapping(value = "/public/categories",method=RequestMethod.GET)
-    public ResponseEntity<CategoryResponse> getAllCategories(@RequestParam(name = "pageSize", defaultValue = "2", required = false) Integer pageSize,
-                                                             @RequestParam(name = "pageNumber",defaultValue = "1", required = false) Integer pageNumber){
+    public ResponseEntity<CategoryResponse> getAllCategories(@RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+                                                             @RequestParam(name = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                                             @RequestParam(name = "sortBy",defaultValue = AppConstants.SORT_CATEGORIES_BY, required = false) String sortBy,
+                                                             @RequestParam(name = "sortOrder",defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
 
-        return new ResponseEntity<>(categoryService.getAllCategories(pageSize,pageNumber),HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.getAllCategories(pageSize,pageNumber,sortBy,sortOrder),HttpStatus.OK);
     }
 
     @PostMapping("/public/categories")
