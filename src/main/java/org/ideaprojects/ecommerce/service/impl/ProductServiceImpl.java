@@ -53,4 +53,62 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setContent(productDTOS);
         return productResponse;
     }
+
+    @Override
+    public ProductResponse searchByCategory(Long categoryId) {
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
+
+        List<Product> products = productRepository.findByCategoryOrderByPriceAsc(category);
+
+        List<ProductDTO> productDTOS = products.stream().map(product ->
+                modelMapper.map(product, ProductDTO.class)).toList();
+
+        ProductResponse productResponse=new ProductResponse();
+        productResponse.setContent(productDTOS);
+        return productResponse;
+    }
+
+    @Override
+    public ProductResponse searchProductByKeyword(String keyword) {
+
+        List<Product> products = productRepository.findByProductNameLikeIgnoreCase("%" +keyword + "%");
+
+        List<ProductDTO> productDTOS = products.stream().map(product ->
+                modelMapper.map(product, ProductDTO.class)).toList();
+
+        ProductResponse productResponse=new ProductResponse();
+        productResponse.setContent(productDTOS);
+        return productResponse;
+    }
+
+    @Override
+    public ProductDTO updateProduct(ProductDTO productDTO, Long productId) {
+
+        Product product = modelMapper.map(productDTO, Product.class);
+
+        Product productDB = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
+        productDB.setProductName(product.getProductName());
+        productDB.setDescription(product.getDescription());
+        productDB.setQuantity(product.getQuantity());
+        productDB.setPrice(product.getPrice());
+        productDB.setDiscount(product.getDiscount());
+        productDB.setSpecialPrice(product.getSpecialPrice());
+
+        Product updateProduct = productRepository.save(productDB);
+        return modelMapper.map(updateProduct, ProductDTO.class);
+    }
+
+    @Override
+    public ProductDTO deleteProduct(Long productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+
+        productRepository.delete(product);
+        return modelMapper.map(product, ProductDTO.class);
+    }
 }
