@@ -52,6 +52,11 @@ public class User {
         this.password = password;
     }
 
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+            orphanRemoval = true)
+    private Cart cart;
+
     @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST},
     fetch = FetchType.EAGER)
     @JoinTable(name="user_role",

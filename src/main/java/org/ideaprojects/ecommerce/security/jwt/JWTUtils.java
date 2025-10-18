@@ -61,6 +61,18 @@ public class JWTUtils {
         return cookie;
 
     }
+
+    public ResponseCookie getCleanJwtCookie( ){
+
+
+        return ResponseCookie.from(jwtCookie,null)
+                .path("/api")
+                .httpOnly(false)
+                .build();
+
+    }
+
+
     public String generateTokenFromUserName(String username){
 
         return Jwts.builder()
