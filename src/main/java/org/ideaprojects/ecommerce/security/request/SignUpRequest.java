@@ -20,7 +20,7 @@ public class SignUpRequest {
     @Email
     private String email;
 
-    private Set<String> roles;
+    private Set<String> role;
 
     @NotBlank
     @Size(min=3,max = 40,message = "User password must be characters at least 3 and max 40")

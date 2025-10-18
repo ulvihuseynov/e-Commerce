@@ -58,7 +58,7 @@ filterChain.doFilter(request,response);
     }
 
     private String parserJwt(HttpServletRequest request) {
-        String jwt=jwtUtils.getJwtFromHeader(request);
+        String jwt=jwtUtils.getJwtFromCookie(request);
         logger.debug("AuthTokenFilter.java: {}",jwt);
         return jwt;
     }
