@@ -1,6 +1,7 @@
 package org.ideaprojects.ecommerce.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.ideaprojects.ecommerce.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+@Data
 public class UserDetailsImpl implements UserDetails {
 
 
@@ -90,4 +92,6 @@ public class UserDetailsImpl implements UserDetails {
     public int hashCode() {
         return Objects.hash(id, userName, email, password, authorities);
     }
+
+
 }

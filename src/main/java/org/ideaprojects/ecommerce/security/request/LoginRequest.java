@@ -1,5 +1,6 @@
-package org.ideaprojects.ecommerce.security.jwt;
+package org.ideaprojects.ecommerce.security.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,9 @@ import lombok.Setter;
 @Setter
 public class LoginRequest {
 
+    @NotBlank
     private String userName;
+    @NotBlank
     private String password;
 
 
