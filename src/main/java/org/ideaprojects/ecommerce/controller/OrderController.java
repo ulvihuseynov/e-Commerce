@@ -20,7 +20,7 @@ public class OrderController {
         this.authUtil = authUtil;
     }
 
-    @PostMapping("/order/users/payment/{paymentMethod}")
+    @PostMapping("/order/users/payments/{paymentMethod}")
     public ResponseEntity<OrderDTO> orderProducts(@PathVariable String paymentMethod,
                                                   @RequestBody OrderRequestDTO orderRequestDTO){
 
